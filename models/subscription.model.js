@@ -68,3 +68,27 @@ const subscritionSchema = new mongoose.Schema({
     },
 
 }, { timestamps: true });
+
+
+subscritionSchema.pre("save", function(next) {
+    if(!this.renwalDate) {
+        const renewalPeriod = {
+            daily: 1,
+            weekly: 7,
+            monthly: 30,
+            yearly: 365,
+        };
+        this.renwalDate = new Date(this.startDate);
+        this.renwalDate.setDate(this.renwalDate.getDate() + renewalPeriod[this.frequency]);
+    }
+    
+    if(this.renwalDate < new Date()) {
+        this.status = "expired";
+    }
+
+    next();
+});
+
+const Subscription = mongoose.model("Subscription", subscritionSchema);
+
+export default Subscription;
