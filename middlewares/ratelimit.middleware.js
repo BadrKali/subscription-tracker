@@ -18,6 +18,7 @@ const rateLimiter = (req, res, next) => {
         if(timeElapsed < RATE_LIMIT_WINDOW) {
             rateLimiters[ip].requests++;
             if(rateLimiters[ip].requests > MAX_REQUESTS) {
+                res.setHeader('Retry-After', Math.ceil((RATE_LIMIT_WINDOW - (currentTime - rateLimiters[ip].firstRequestTime)) / 1000));
                 return res.status(429).json({ message: "Too many requests. Please try again later." });
             }
         } else {
