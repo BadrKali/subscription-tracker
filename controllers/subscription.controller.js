@@ -1,9 +1,23 @@
 import Subscription from '../models/subscription.model.js';
+import { Queue } from 'bullmq';
+import redisConnection from '../config/redisClient.js';
 
+
+const subscriptionQueue = new Queue("subscriptionQueue", {
+    connection: redisConnection
+});
 
 export const createSubscription = async (req, res, next) => {
     try {
         const subscription = await Subscription.create({...req.body, user: req.user._id});
+        await subscriptionQueue.add('createSubscription', {
+            userId: req.user._id,
+            subscriptionId: subscription._id,
+            renewalDate: subscription.renewalDate,
+        });
+
+
+
         res.status(201).json({
             success: true,
             data: subscription
