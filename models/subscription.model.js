@@ -50,9 +50,9 @@ const subscritionSchema = new mongoose.Schema({
             message: "Start date must be greater than today",
         },
     },
-    renwalDate: {
+    renewalDate: {
         type: Date,
-        required: [true, "Renewal date is required"],
+        // required: [true, "Renewal date is required"],
         validate : {
             validator: function(v) {
                 return v > this.startDate;
@@ -71,18 +71,18 @@ const subscritionSchema = new mongoose.Schema({
 
 
 subscritionSchema.pre("save", function(next) {
-    if(!this.renwalDate) {
+    if(!this.renewalDate) {
         const renewalPeriod = {
             daily: 1,
             weekly: 7,
             monthly: 30,
             yearly: 365,
         };
-        this.renwalDate = new Date(this.startDate);
-        this.renwalDate.setDate(this.renwalDate.getDate() + renewalPeriod[this.frequency]);
+        this.renewalDate = new Date(this.startDate);
+        this.renewalDate.setDate(this.renewalDate.getDate() + renewalPeriod[this.frequency]);
     }
     
-    if(this.renwalDate < new Date()) {
+    if(this.renewalDate < new Date()) {
         this.status = "expired";
     }
 
