@@ -51,6 +51,11 @@ export const signUp = async (req, res, next) => {
 export const signIn = async (req, res, next) => {
     try {
         const {email, password} = req.body;
+        if(!email || !password) {
+            const error = new Error('Email and password are required');
+            error.statusCode = 400;
+            throw error;
+        }
 
         const user = await User.findOne({email: email});
         if(!user) {
