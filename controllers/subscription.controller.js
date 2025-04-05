@@ -16,8 +16,6 @@ export const createSubscription = async (req, res, next) => {
             renewalDate: subscription.renewalDate,
         });
 
-
-
         res.status(201).json({
             success: true,
             data: subscription
